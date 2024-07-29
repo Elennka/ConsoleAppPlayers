@@ -2,19 +2,26 @@ package ru.inno.course.player.service;
 
 import ru.inno.course.player.data.DataProvider;
 import ru.inno.course.player.data.DataProviderJSON;
+import ru.inno.course.player.data.DataProviderNoFile;
 import ru.inno.course.player.model.Player;
 
 import java.util.*;
 
 public class PlayerServiceImpl implements PlayerService {
-    private Map<Integer, Player> players;
-    private Set<String> nicknames;
+    private Map<Integer, Player> players = new HashMap<>();
+    private Set<String> nicknames = new HashSet<>();
     private int counter = 0;
     private final DataProvider provider;
-    public PlayerServiceImpl() {
-        provider = new DataProviderJSON();
-        initStorages();
+
+    public PlayerServiceImpl(boolean hasFile) {
+        if (hasFile) {
+            provider = new DataProviderJSON();
+            initStorages();
+        } else {
+            provider = new DataProviderNoFile();
+        }
     }
+
 
     @Override
     public Player getPlayerById(int id) {
@@ -31,9 +38,21 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
+    public Collection<Player> getPlayersFromFile() {
+        List<Player> playersFromFile = new ArrayList();;
+
+        playersFromFile=readFromFile();
+        return playersFromFile;//this.players.values();
+    }
+
+    @Override
     public int createPlayer(String nickname) {
         if (nicknames.contains(nickname)) {
             throw new IllegalArgumentException("Nickname is already in use: " + nickname);
+        }
+
+        if ((nickname.length() > 15) || (nickname.length() == 0)) {
+            throw new IllegalArgumentException("Wrong length of Name: " + nickname.length() + " символов. А должно быть от 1 до 15");
         }
 
         counter++;
@@ -43,6 +62,14 @@ public class PlayerServiceImpl implements PlayerService {
         saveToFile();
         return player.getId();
     }
+
+    public void createPlayersFromList(String[] playersList){
+
+        for (String nickname : playersList) {
+            createPlayer(nickname);
+        }
+    }
+
 
     @Override
     public Player deletePlayer(int id) {
@@ -64,7 +91,7 @@ public class PlayerServiceImpl implements PlayerService {
         Player player = this.players.get(playerId);
         int currentPoints = player.getPoints();
 
-        if(points > 100){
+        if (points > 100) {
             points = 100;
         }
 
@@ -100,6 +127,18 @@ public class PlayerServiceImpl implements PlayerService {
         } catch (Exception ex) {
             System.err.println("File saving error");
         }
+    }
+
+    private List<Player> readFromFile() {
+
+        List<Player> playersFromFile = new ArrayList();
+        try {
+            playersFromFile= (List<Player>) this.provider.load();
+        } catch (Exception ex) {
+            System.err.println("File reading error");
+        }
+
+        return playersFromFile;
     }
 
 }

@@ -11,6 +11,8 @@ public interface PlayerService {
     // получить список игроков
     Collection<Player> getPlayers();
 
+    Collection<Player> getPlayersFromFile();
+
     // создать игрока (возвращает id нового игрока)
     int createPlayer(String nickname);
 
@@ -19,4 +21,6 @@ public interface PlayerService {
 
     // Добавить очков игроку. Возвращает обновленный счет
     int addPoints(int playerId, int points);
+
+    void createPlayersFromList(String[] playerslist);
 }

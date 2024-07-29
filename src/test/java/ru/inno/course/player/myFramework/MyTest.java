@@ -14,7 +14,7 @@ public class MyTest {
     public static void main(String[] args) throws IOException {
         String nickname = "Nikita";
         Files.deleteIfExists(Path.of("./data.json"));
-        PlayerService service = new PlayerServiceImpl();
+        PlayerService service = new PlayerServiceImpl(true);
 
         TestCase case1 = new TestCase("1. добавить игрока - проверить наличие в списке", () -> {
             Collection<Player> listBefore = service.getPlayers();
