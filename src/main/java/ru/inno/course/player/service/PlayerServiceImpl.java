@@ -35,6 +35,9 @@ public class PlayerServiceImpl implements PlayerService {
         if (nicknames.contains(nickname)) {
             throw new IllegalArgumentException("Nickname is already in use: " + nickname);
         }
+        if ((nickname.length() > 15) || (nickname.length() == 0)) {
+            throw new IllegalArgumentException("Wrong length of Name: " + nickname.length() + " символов. А должно быть от 1 до 15");
+        }
 
         counter++;
         Player player = new Player(counter, nickname, 0, true);
